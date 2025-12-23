@@ -6,10 +6,10 @@
 //  the terms of this license.
 //  You must not remove this notice, or any other, from this software.
 
-package clojure.data.int_map;
+namespace clojure.data.int_map;
 
-import java.util.Iterator;
-import clojure.lang.IFn;
+//import java.util.Iterator;
+using clojure.lang;
 
 public interface INode {
 
@@ -20,7 +20,7 @@ public interface INode {
     }
 
     long count();
-    Iterator iterator(IterationType type, boolean reverse);
+    //Iterator iterator(IterationType type, bool reverse);
     INode range(long min, long max);
 
     INode merge(INode node, long epoch, IFn f);
@@ -31,5 +31,5 @@ public interface INode {
 
     Object kvreduce(IFn f, Object init);
     Object reduce(IFn f, Object init);
-    Object fold(long n, IFn combiner, IFn reducer, IFn fjtask, IFn fjfork, IFn fjjoin);
+    // Object fold(long n, IFn combiner, IFn reducer, IFn fjtask, IFn fjfork, IFn fjjoin);
 }
