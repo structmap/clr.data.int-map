@@ -15,17 +15,14 @@
   (:require
     [clojure.core.reducers :as r])
   (:import
-    [java.util
-     Map
-     Map$Entry]
     [clojure.data.int_map
      INode
      IntSet
-     Nodes$Empty
-     INode$IterationType]
+     Nodes+Empty
+     INode+IterationType]
     [clojure.lang Util]))
 
-(set! *warn-on-reflection* true)
+(set! *warn-on-reflection* false)
 (set! *unchecked-math* true)
 
 ;;;
@@ -56,7 +53,7 @@
   IRange
   (range [_ min max]
     (PersistentIntMap.
-      (or (.range root min max) Nodes$Empty/EMPTY)
+      (or (.range root min max) Nodes+Empty/EMPTY)
       epoch
       meta))
 
@@ -88,22 +85,22 @@
 
   (equiv [this x]
     (cond
-      (not (instance? java.util.Map x))
-      false
+      ;; (not (instance? java.util.Map x))
+      ;; false
 
       (and (instance? clojure.lang.IPersistentMap x)
            (not (instance? clojure.lang.MapEquivalence x)))
       false
 
-      (not= (count this) (.size ^Map x))
+      (not= (count this) (.size x))
       false
 
       (instance? PersistentIntMap x)
       (loop [it1 (.iterator this)
              it2 (.iterator ^PersistentIntMap x)]
         (if (.hasNext it1)
-          (let [^Map$Entry e1 (.next it1)
-                ^Map$Entry e2 (.next it2)]
+          (let [e1 (.next it1)
+                e2 (.next it2)]
             (if (and (Util/equiv (.getKey e1) (.getKey e2))
                   (Util/equiv (.getValue e1) (.getValue e2)))
               (recur it1 it2)
@@ -113,17 +110,17 @@
       :else
       (loop [it (.iterator this)]
         (if (.hasNext it)
-          (let [^Map$Entry e (.next it)]
-            (if (and (.containsKey ^Map x (.getKey e))
-                  (Util/equiv (.getValue e) (.get ^Map x (.getKey e))))
+          (let [e (.next it)]
+            (if (and (.containsKey x (.getKey e))
+                  (Util/equiv (.getValue e) (.get x (.getKey e))))
               (recur it)
               false))
           true))))
 
-  (cons [this o]
-    (if (map? o)
-      (reduce #(apply assoc %1 %2) this o)
-      (.assoc this (nth o 0) (nth o 1))))
+;;   (cons [this o]
+;;     (if (map? o)
+;;       (reduce #(apply assoc %1 %2) this o)
+;;       (.assoc this (nth o 0) (nth o 1))))
 
   clojure.lang.Seqable
   (seq [this]
@@ -131,12 +128,11 @@
 
   clojure.lang.Reversible
   (rseq [_]
-    (iterator-seq (.iterator root INode$IterationType/ENTRIES true)))
+    (iterator-seq (.iterator root INode+IterationType/ENTRIES true)))
 
-  r/CollFold
-
-  (coll-fold [this n combinef reducef]
-    (#'r/fjinvoke #(try (.fold root n combinef reducef #'r/fjtask #'r/fjfork #'r/fjjoin) (catch Throwable e (.printStackTrace e)))))
+  ;; r/CollFold
+  ;; (coll-fold [this n combinef reducef]
+  ;;   (#'r/fjinvoke #(try (.fold root n combinef reducef #'r/fjtask #'r/fjfork #'r/fjjoin) (catch Throwable e (.printStackTrace e)))))
 
   clojure.core.protocols.CollReduce
 
@@ -163,10 +159,10 @@
         x)))
 
   Object
-  (hashCode [this]
+  (GetHashCode [this]
     (reduce
       (fn [acc [k v]]
-        (unchecked-add acc (bit-xor (.hashCode k) (.hashCode v))))
+        (unchecked-add acc (bit-xor (.GetHashCode k) (.GetHashCode v))))
       0
       (seq this)))
 
@@ -174,45 +170,45 @@
   (hasheq [this]
     (compile-if (resolve 'clojure.core/hash-unordered-coll)
       (hash-unordered-coll this)
-      (.hashCode this)))
+      (.GetHashCode this)))
 
-  (equals [this x]
-    (cond
-      (identical? this x)
-      true
+;;   (equals [this x]
+;;     (cond
+;;       (identical? this x)
+;;       true
+;; 
+;;       ;; (not (instance? java.util.Map x))
+;;       ;; false
+;; 
+;;       (not= (count this) (.size x))
+;;       false
+;; 
+;;       (instance? PersistentIntMap x)
+;;       (loop [it1 (.iterator this)
+;;              it2 (.iterator ^PersistentIntMap x)]
+;;         (if (and (.hasNext it1) (.hasNext it2))
+;;           (let [e1 (.next it1)
+;;                 e2 (.next it2)]
+;;             (if (and (Util/equals (.getKey e1) (.getKey e2))
+;;                   (Util/equals (.getValue e1) (.getValue e2)))
+;;               (recur it1 it2)
+;;               false))
+;;           true))
+;; 
+;;       :else
+;;       (loop [it (.iterator this)]
+;;         (if (.hasNext it)
+;;           (let [e (.next it)]
+;;             (if e
+;;               (if (and (.containsKey x (.getKey e))
+;;                        (Util/equals (.getValue e) (.get x (.getKey e))))
+;;                 (recur it)
+;;                 false)
+;;               false))
+;;           true))))
 
-      (not (instance? java.util.Map x))
-      false
-
-      (not= (count this) (.size ^Map x))
-      false
-
-      (instance? PersistentIntMap x)
-      (loop [it1 (.iterator this)
-             it2 (.iterator ^PersistentIntMap x)]
-        (if (and (.hasNext it1) (.hasNext it2))
-          (let [^Map$Entry e1 (.next it1)
-                ^Map$Entry e2 (.next it2)]
-            (if (and (Util/equals (.getKey e1) (.getKey e2))
-                  (Util/equals (.getValue e1) (.getValue e2)))
-              (recur it1 it2)
-              false))
-          true))
-
-      :else
-      (loop [it (.iterator this)]
-        (if (.hasNext it)
-          (let [^Map$Entry e (.next it)]
-            (if e
-              (if (and (.containsKey ^Map x (.getKey e))
-                       (Util/equals (.getValue e) (.get ^Map x (.getKey e))))
-                (recur it)
-                false)
-              false))
-          true))))
-
-  (toString [this]
-    (str (into {} this)))
+;;   (ToString [this]
+;;     (str (into {} this)))
 
   clojure.lang.ILookup
   (valAt [this k]
@@ -220,7 +216,7 @@
   (valAt [this k default]
     (try
       (.get root (long k) default)
-      (catch ClassCastException _ default)))
+      (catch InvalidCastException _ default)))
 
   clojure.lang.Associative
   (containsKey [this k]
@@ -231,48 +227,48 @@
       (when (not= v ::not-found)
         (clojure.lang.MapEntry. k v))))
 
-  (assoc [this k v]
-    (let [k (long k)
-          epoch' (inc epoch)]
-      (PersistentIntMap.
-        (.assoc root (long k) epoch' default-merge v)
-        epoch'
-        meta)))
+;;   (assoc [this k v]
+;;     (let [k (long k)
+;;           epoch' (inc epoch)]
+;;       (PersistentIntMap.
+;;         (.assoc root (long k) epoch' default-merge v)
+;;         epoch'
+;;         meta)))
 
   (empty [this]
-    (cond-> (PersistentIntMap. Nodes$Empty/EMPTY 0 nil)
+    (cond-> (PersistentIntMap. Nodes+Empty/EMPTY 0 nil)
       meta (with-meta meta)))
 
   clojure.lang.IEditableCollection
   (asTransient [this]
     (->transient-int-map root (inc epoch) meta))
 
-  java.util.Map
-  (get [this k]
-    (.valAt this k))
-  (isEmpty [this]
-    (empty? (seq this)))
-  (size [this]
-    (count this))
-  (keySet [this]
-    (->> this
-      seq
-      (map key)
-      set))
-  (put [_ _ _]
-    (throw (UnsupportedOperationException.)))
-  (putAll [_ _]
-    (throw (UnsupportedOperationException.)))
-  (clear [_]
-    (throw (UnsupportedOperationException.)))
-  (remove [_ _]
-    (throw (UnsupportedOperationException.)))
-  (values [this]
-    (->> this seq (map second)))
-  (entrySet [this]
-    (->> this seq set))
-  (iterator [this]
-    (.iterator root INode$IterationType/ENTRIES false))
+;;   java.util.Map
+;;   (get [this k]
+;;     (.valAt this k))
+;;   (isEmpty [this]
+;;     (empty? (seq this)))
+;;   (size [this]
+;;     (count this))
+;;   (keySet [this]
+;;     (->> this
+;;       seq
+;;       (map key)
+;;       set))
+;;   (put [_ _ _]
+;;     (throw (UnsupportedOperationException.)))
+;;   (putAll [_ _]
+;;     (throw (UnsupportedOperationException.)))
+;;   (clear [_]
+;;     (throw (UnsupportedOperationException.)))
+;;   (remove [_ _]
+;;     (throw (UnsupportedOperationException.)))
+;;   (values [this]
+;;     (->> this seq (map second)))
+;;   (entrySet [this]
+;;     (->> this seq set))
+;;   (iterator [this]
+;;     (.iterator root INode+IterationType/ENTRIES false))
 
   clojure.lang.IPersistentMap
   (assocEx [this k v]
@@ -283,7 +279,7 @@
     (let [k (long k)
           epoch' (inc epoch)]
       (PersistentIntMap.
-        (or (.dissoc root k epoch') Nodes$Empty/EMPTY)
+        (or (.dissoc root k epoch') Nodes+Empty/EMPTY)
         epoch'
         meta)))
 
@@ -295,7 +291,7 @@
   (invoke [this k default]
     (.valAt this k default)))
 
-(def ^:private ^PersistentIntMap EMPTY-INT-MAP (PersistentIntMap. Nodes$Empty/EMPTY 0 nil))
+(def ^:private ^PersistentIntMap EMPTY-INT-MAP (PersistentIntMap. Nodes+Empty/EMPTY 0 nil))
 
 (deftype TransientIntMap
   [^INode root
@@ -304,7 +300,7 @@
 
   IRadix
   (mergeWith [this b f]
-    (throw (IllegalArgumentException. "Cannot call `merge-with` on transient int-map.")))
+    (throw (InvalidOperationException. "Cannot call `merge-with` on transient int-map.")))
 
   (update [this k f]
     (let [root' (.update root k epoch f)]
@@ -327,23 +323,23 @@
 
   clojure.lang.Seqable
   (seq [this]
-    (iterator-seq (.iterator root INode$IterationType/ENTRIES false)))
+    (iterator-seq (.iterator root INode+IterationType/ENTRIES false)))
 
   Object
-  (hashCode [this]
+  (GetHashCode [this]
     (reduce
       (fn [acc [k v]]
         (unchecked-add acc (bit-xor (hash k) (hash v))))
       0
       (seq this)))
 
-  (equals [this x]
+  (Equals [this x]
     (or (identical? this x)
       (and
         (map? x)
         (= x (into {} this)))))
 
-  (toString [this]
+  (ToString [this]
     (str (into {} this)))
 
   clojure.lang.ILookup
@@ -352,7 +348,7 @@
   (valAt [this k default]
     (try
       (.get root k default)
-      (catch ClassCastException _ default)))
+      (catch InvalidCastException _ default)))
 
   clojure.lang.Associative
   (containsKey [this k]
@@ -365,23 +361,23 @@
 
   clojure.lang.ITransientMap
 
-  (assoc [this k v]
-    (let [k (long k)
-          root' (.assoc root (long k) epoch default-merge v)]
-      (if (identical? root' root)
-        this
-        (TransientIntMap. root' epoch meta))))
+;;   (assoc [this k v]
+;;     (let [k (long k)
+;;           root' (.assoc root (long k) epoch default-merge v)]
+;;       (if (identical? root' root)
+;;         this
+;;         (TransientIntMap. root' epoch meta))))
 
   (conj [this o]
     (if (map? o)
       (reduce #(apply assoc! %1 %2) this o)
       (.assoc this (nth o 0) (nth o 1))))
 
-  (persistent [_]
-    (PersistentIntMap. root (inc epoch) meta))
+;;   (persistent [_]
+;;     (PersistentIntMap. root (inc epoch) meta))
 
   (without [this k]
-    (let [root' (or (.dissoc root (long k) epoch) Nodes$Empty/EMPTY)]
+    (let [root' (or (.dissoc root (long k) epoch) Nodes+Empty/EMPTY)]
       (if (identical? root' root)
         this
         (TransientIntMap. root' epoch meta))))
@@ -472,12 +468,12 @@
     (iterator-seq (.elements int-set 0 true)))
 
   java.lang.Object
-  (hashCode [this]
+  (GetHashCode [this]
     (->> this
       (map #(bit-xor (long %) (unsigned-bit-shift-right (long %) 32)))
       (reduce +')))
 
-  (equals [this x]
+  (Equals [this x]
     (.equiv this x))
 
   clojure.lang.IHashEq
@@ -486,11 +482,11 @@
       (hash-unordered-coll this)
       (.hashCode this)))
 
-  java.util.Set
-  (size [this] (count this))
-  (isEmpty [this] (zero? (count this)))
-  (iterator [this] (clojure.lang.SeqIterator. (seq this)))
-  (containsAll [this s] (every? #(contains? this %) s))
+;;   java.util.Set
+;;   (size [this] (count this))
+;;   (isEmpty [this] (zero? (count this)))
+;;   (iterator [this] (clojure.lang.SeqIterator. (seq this)))
+;;   (containsAll [this s] (every? #(contains? this %) s))
 
   clojure.lang.IObj
   (meta [_] meta)
@@ -512,8 +508,8 @@
   clojure.lang.IPersistentSet
   (equiv [this x]
     (and
-      (instance? java.util.Set x)
-      (= (count this) (count x))
+;;       (instance? java.util.Set x)
+;;       (= (count this) (count x))
       (every?
         #(contains? x %)
         (seq this))))
@@ -525,7 +521,7 @@
   (contains [_ n]
     (try
       (.contains int-set n)
-      (catch ClassCastException _ false)))
+      (catch InvalidCastException _ false)))
   (get [this n]
     (when (.contains this n) n))
   (disjoin [this n]
