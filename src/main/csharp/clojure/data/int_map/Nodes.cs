@@ -20,7 +20,7 @@ public class Nodes {
       this.f = f;
     }
 
-    public Object invoke(Object x, Object y) {
+    public override Object invoke(Object x, Object y) {
       return f.invoke(y, x);
     }
   }

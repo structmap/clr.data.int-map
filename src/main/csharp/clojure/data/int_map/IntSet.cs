@@ -429,7 +429,7 @@ public class IntSet : ISet
             this.val = val;
         }
 
-        public new object invoke(object v)
+        public override object invoke(object v)
         {
             var s = (ISet)v;
             return s == null ? new SingleContainer(leafOffset(leafSize, val)) : s.add(epoch, leafOffset(leafSize, val));
@@ -449,7 +449,7 @@ public class IntSet : ISet
             this.val = val;
         }
 
-        public new object invoke(object v)
+        public override object invoke(object v)
         {
             var s = (ISet)v;
             return s == null ? null : s.remove(epoch, leafOffset(leafSize, val));
@@ -469,7 +469,7 @@ public class IntSet : ISet
             this.min = min;
         }
 
-        public new object invoke(object v)
+        public override object invoke(object v)
         {
             return v != null ? ((ISet)v).range(epoch, leafOffset(leafSize, min), leafSize) : null;
         }
@@ -488,7 +488,7 @@ public class IntSet : ISet
             this.max = max;
         }
 
-        public new object invoke(object v)
+        public override object invoke(object v)
         {
             return v != null ? ((ISet)v).range(epoch, 0, leafOffset(leafSize, max)) : null;
         }
@@ -503,7 +503,7 @@ public class IntSet : ISet
             this.epoch = epoch;
         }
 
-        public new object invoke(object a, object b)
+        public override object invoke(object a, object b)
         {
             if (a == null) return b;
             if (b == null) return a;
