@@ -81,6 +81,10 @@
   (count [this]
     (.count root))
 
+  System.Collections.ICollection
+  (get_Count [this]
+    (.count root))
+
   clojure.lang.IPersistentCollection
 
   (equiv [this x]
@@ -320,6 +324,10 @@
   (count [this]
     (.count root))
 
+  System.Collections.ICollection
+  (get_Count [this]
+    (.count root))
+
   clojure.lang.MapEquivalence
 
   (equiv [this x]
@@ -512,6 +520,10 @@
   (^System.Collections.IEnumerator GetEnumerator [_]
     (.elements int-set 0 false))
 
+  System.Collections.ICollection
+  (get_Count [_]
+    (.count int-set))
+
   clojure.lang.IFn
   (invoke [this idx]
     (when (.contains this idx)
@@ -563,6 +575,10 @@
   (invoke [this idx]
     (when (.contains this idx)
       idx))
+
+  System.Collections.ICollection
+  (get_Count [_]
+    (.count int-set))
 
   clojure.lang.ITransientSet
   (count [_]
