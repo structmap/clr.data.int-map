@@ -467,7 +467,7 @@
   (rseq [_]
     (iterator-seq (.elements int-set 0 true)))
 
-  java.lang.Object
+  Object
   (GetHashCode [this]
     (->> this
       (map #(bit-xor (long %) (unsigned-bit-shift-right (long %) 32)))
