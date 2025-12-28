@@ -96,7 +96,7 @@
            (not (instance? clojure.lang.MapEquivalence x)))
       false
 
-      (not= (count this) (.size x))
+      (not= (count this) (.get_Count x))
       false
 
       (instance? PersistentIntMap x)
@@ -188,7 +188,7 @@
       ;; (not (instance? java.util.Map x))
       ;; false
 
-      (not= (count this) (.size x))
+      (not= (count this) (.get_Count x))
       false
 
       (instance? PersistentIntMap x)
