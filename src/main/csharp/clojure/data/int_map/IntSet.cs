@@ -250,30 +250,26 @@ public class IntSet : ISet
             this.bitSet = bitSet;
         }
 
-        public ISet add(long epoch, long val)
-        {
-            var bitSet = (BitSet)this.bitSet.Clone();
-            if (epoch == this.epoch)
-            {
-                bitSet.Set((short)val);
+        public ISet add(long epoch, long val) {
+            if (epoch == this.epoch) {
+                bitSet.Set((short) val);
                 return this;
+            } else {
+                BitSet bitSet = (BitSet) this.bitSet.Clone();
+                bitSet.Set((short) val);
+                return new BitSetContainer(epoch, bitSet);
             }
-
-            bitSet.Set((short)val);
-            return new BitSetContainer(epoch, bitSet);
         }
 
-        public ISet remove(long epoch, long val)
-        {
-            var bitSet = (BitSet)this.bitSet.Clone();
-            if (epoch == this.epoch)
-            {
-                bitSet.Set((short)val, false);
+        public ISet remove(long epoch, long val) {
+            if (epoch == this.epoch) {
+                bitSet.Set((short) val, false);
                 return this;
+            } else {
+                BitSet bitSet = (BitSet) this.bitSet.Clone();
+                bitSet.Set((short) val, false);
+                return new BitSetContainer(epoch, bitSet);
             }
-
-            bitSet.Set((short)val, false);
-            return new BitSetContainer(epoch, bitSet);
         }
 
         public bool contains(long val)
