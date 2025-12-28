@@ -100,11 +100,11 @@
       false
 
       (instance? PersistentIntMap x)
-      (loop [it1 (.iterator this)
-             it2 (.iterator ^PersistentIntMap x)]
-        (if (.hasNext it1)
-          (let [e1 (.next it1)
-                e2 (.next it2)]
+      (loop [it1 (.GetEnumerator this)
+             it2 (.GetEnumerator ^PersistentIntMap x)]
+        (if (and (.MoveNext it1) (.MoveNext it2))
+          (let [e1 (.-Current it1)
+                e2 (.-Current it2)]
             (if (and (Util/equiv (.getKey e1) (.getKey e2))
                   (Util/equiv (.getValue e1) (.getValue e2)))
               (recur it1 it2)
@@ -112,9 +112,9 @@
           true))
 
       :else
-      (loop [it (.iterator this)]
-        (if (.hasNext it)
-          (let [e (.next it)]
+      (loop [it (.GetEnumerator this)]
+        (if (.MoveNext it)
+          (let [e (.-Current it)]
             (if (and (.containsKey x (.getKey e))
                   (Util/equiv (.getValue e) (.get x (.getKey e))))
               (recur it)
@@ -128,11 +128,11 @@
 
   clojure.lang.Seqable
   (seq [this]
-    (iterator-seq (.iterator this)))
+    (iterator-seq (.GetEnumerator this)))
 
   System.Collections.IEnumerable
   (^System.Collections.IEnumerator GetEnumerator [this]
-    (.iterator this))
+    (.iterator root INode+IterationType/ENTRIES false))
 
   clojure.lang.Reversible
   (rseq [_]
@@ -192,11 +192,11 @@
       false
 
       (instance? PersistentIntMap x)
-      (loop [it1 (.iterator this)
-             it2 (.iterator ^PersistentIntMap x)]
-        (if (and (.hasNext it1) (.hasNext it2))
-          (let [e1 (.next it1)
-                e2 (.next it2)]
+      (loop [it1 (.GetEnumerator this)
+             it2 (.GetEnumerator ^PersistentIntMap x)]
+        (if (and (.MoveNext it1) (.MoveNext it2))
+          (let [e1 (.-Current it1)
+                e2 (.-Current it2)]
             (if (and (Util/equals (.getKey e1) (.getKey e2))
                   (Util/equals (.getValue e1) (.getValue e2)))
               (recur it1 it2)
@@ -204,9 +204,9 @@
           true))
 
       :else
-      (loop [it (.iterator this)]
-        (if (.hasNext it)
-          (let [e (.next it)]
+      (loop [it (.GetEnumerator this)]
+        (if (.MoveNext it)
+          (let [e (.-Current it)]
             (if e
               (if (and (.containsKey x (.getKey e))
                        (Util/equals (.getValue e) (.get x (.getKey e))))
