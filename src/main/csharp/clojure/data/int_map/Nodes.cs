@@ -76,7 +76,8 @@ public class Nodes {
     }
 
     public IEnumerator iterator(INode.IterationType type, bool reverse) {
-      return reverse ? b.iterator(type, reverse) : a.iterator(type, reverse);
+      yield return reverse ? b.iterator(type, reverse) : a.iterator(type, reverse);
+      yield return reverse ? a.iterator(type, reverse) : b.iterator(type, reverse);
     }
 
     public INode range(long min, long max) {
