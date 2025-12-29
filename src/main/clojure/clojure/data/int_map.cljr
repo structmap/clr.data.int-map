@@ -168,17 +168,11 @@
 
   clojure.lang.IHashEq
   (hasheq [this]
-    (compile-if (resolve 'clojure.core/hash-unordered-coll)
-      (hash-unordered-coll this)
-      (.GetHashCode this)))
+    (hash-unordered-coll this))
 
   Object
   (GetHashCode [this]
-    (reduce
-      (fn [acc [k v]]
-        (unchecked-add acc (bit-xor (.GetHashCode k) (.GetHashCode v))))
-      0
-      (seq this)))
+    (hash-unordered-coll this))
 
   (Equals [this x]
     (cond
@@ -485,18 +479,14 @@
 
   Object
   (GetHashCode [this]
-    (->> this
-      (map #(bit-xor (long %) (unsigned-bit-shift-right (long %) 32)))
-      (reduce +')))
+    (hash-unordered-coll this))
 
   (Equals [this x]
     (.equiv this x))
 
   clojure.lang.IHashEq
   (hasheq [this]
-    (compile-if (resolve 'clojure.core/hash-unordered-coll)
-      (hash-unordered-coll this)
-      (.hashCode this)))
+    (hash-unordered-coll this))
 
 ;;   java.util.Set
 ;;   (size [this] (count this))
