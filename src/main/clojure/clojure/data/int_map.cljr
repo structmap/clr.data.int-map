@@ -128,7 +128,7 @@
 
   clojure.lang.Seqable
   (seq [this]
-    (iterator-seq (.GetEnumerator this)))
+    (iterator-seq (.GetEnumerator ^System.Collections.IEnumerable this)))
 
   System.Collections.IEnumerable
   (^System.Collections.IEnumerator GetEnumerator [this]
