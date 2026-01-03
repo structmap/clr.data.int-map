@@ -307,7 +307,7 @@
     {:keys [base ordered?]
      :or {ordered? false
           base {}}}]
-   (chuck/checking "map-like" n
+   (chuck/checking "map-like" {:num-tests n}
     [actions (gen-map-actions key-generator value-generator (transient? empty-coll) ordered?)]
     (let [[a b actions] (build-collections empty-coll base false actions)]
       (assert-equivalent-maps a b)))))
