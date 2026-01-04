@@ -100,8 +100,8 @@
       false
 
       (instance? PersistentIntMap x)
-      (loop [it1 (.GetEnumerator this)
-             it2 (.GetEnumerator ^PersistentIntMap x)]
+      (loop [it1 (.GetEnumerator ^System.Collections.IEnumerable this)
+             it2 (.GetEnumerator ^System.Collections.IEnumerable x)]
         (if (and (.MoveNext it1) (.MoveNext it2))
           (let [e1 (.-Current it1)
                 e2 (.-Current it2)]
@@ -187,7 +187,7 @@
 
       (instance? PersistentIntMap x)
       (loop [it1 (.GetEnumerator this)
-             it2 (.GetEnumerator ^PersistentIntMap x)]
+             it2 (.GetEnumerator ^System.Collections.IEnumerable x)]
         (if (and (.MoveNext it1) (.MoveNext it2))
           (let [e1 (.-Current it1)
                 e2 (.-Current it2)]
