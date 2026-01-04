@@ -379,12 +379,8 @@
 
   clojure.lang.ITransientMap
 
-  (^clojure.lang.ITransientAssociative assoc [this k v]
-    (let [k (long k)
-          root' (.assoc root (long k) epoch default-merge v)]
-      (if (identical? root' root)
-        this
-        (TransientIntMap. root' epoch meta))))
+  (^clojure.lang.ITransientMap assoc [this k v]
+    (.assoc ^clojure.lang.ITransientAssociative this k v))
 
   (^clojure.lang.ITransientCollection conj [this o]
     (if (map? o)
@@ -396,6 +392,15 @@
 
   (without [this k]
     (let [root' (or (.dissoc root (long k) epoch) Nodes+Empty/EMPTY)]
+      (if (identical? root' root)
+        this
+        (TransientIntMap. root' epoch meta))))
+
+  clojure.lang.ITransientAssociative
+
+  (^clojure.lang.ITransientAssociative assoc [this k v]
+    (let [k (long k)
+          root' (.assoc root (long k) epoch default-merge v)]
       (if (identical? root' root)
         this
         (TransientIntMap. root' epoch meta))))
