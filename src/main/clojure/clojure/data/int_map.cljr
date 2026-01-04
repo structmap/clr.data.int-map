@@ -386,7 +386,7 @@
   (conj [this o]
     (if (map? o)
       (reduce #(apply assoc! %1 %2) this o)
-      (.assoc this (nth o 0) (nth o 1))))
+      (.assoc ^clojure.lang.ITransientAssociative this (nth o 0) (nth o 1))))
 
   (^clojure.lang.IPersistentCollection persistent [_]
     (PersistentIntMap. root (inc epoch) meta))
