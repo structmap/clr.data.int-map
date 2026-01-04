@@ -209,8 +209,8 @@
          (map #(get b %) (range (count b)))))
   #?(:clj (is (= (map #(.get a %) (range (count a)))
                  (map #(.get b %) (range (count b))))))
-  #?(:cljr (is (= (map #(.get a %) (range (count a)))
-                  (map #(.get b %) (range (count b))))))
+  #?(:cljr (is (= (map #(.valAt a %) (range (count a)))
+                  (map #(.valAt b %) (range (count b))))))
   (is (= 0 (compare a b))))
 
 (defn assert-equivalent-sets [a b]
@@ -229,8 +229,10 @@
            (map #(get b %) ks)))
     (is (= (map #(a %) ks)
            (map #(b %) ks)))
-    (is (= (map #(.get a %) ks)
-           (map #(.get b %) ks))))
+    #?(:clj (is (= (map #(.get a %) ks)
+                   (map #(.get b %) ks))))
+    #?(:cljr (is (= (map #(.valAt a %) ks)
+                    (map #(.valAt b %) ks)))))
   (is (and (every? #(= (key %) (first %)) a)
            (every? #(= (key %) (first %)) b)))
   (is (= (meta-map (keys a)) (meta-map (keys b))))
