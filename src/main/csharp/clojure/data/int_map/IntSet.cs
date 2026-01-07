@@ -194,7 +194,13 @@ public class IntSet : ISet
             if (k1 == k2 && e1.val() != null && e2.val() != null)
             {
                 node = node.assoc(k1, epoch, null, ((ISet)e1.val()).difference(epoch, (ISet)e2.val()));
-                if (!i1.MoveNext() || !i2.MoveNext()) break;
+                if (!i1.MoveNext()) break;
+                if (!i2.MoveNext())
+                {
+                    e1 = (MapEntry)i1.Current;
+                    node = node.assoc((long)e1.key(), epoch, null, e1.val());
+                    break;
+                }
                 e1 = (MapEntry)i1.Current;
                 e2 = (MapEntry)i2.Current;
             }
