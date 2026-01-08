@@ -20,7 +20,7 @@ jobs:
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: ./bin/Release/clojure.data.int-map.${{ github.ref }}.nupkg
-        asset_name: clojure.data.int-map.${{ github.ref }}.nupkg
+        asset_name: clojure.data.int-map.${{ github.ref_name }}.nupkg
         tag: ${{ github.ref }}
         overwrite: true
-        body: "release {{ github.ref }}"
+        body: ""
