@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
+        <ImplicitUsings>enable</ImplicitUsings>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <PackageId>clojure.data.int-map</PackageId>
+        <RootNamespace>clojure.data.int-map</RootNamespace>
+        <Title>clojure.data.int-map</Title>
+        <Product>clojure.data.int-map</Product>
+        <AssemblyTitle>clojure.data.int-map</AssemblyTitle>
+        <Authors>Zach Tellman, Rich Hickey and contributors</Authors>
+        <Description>A port of the data.int-map library to ClojureCLR</Description>
+        <Copyright>Copyright © 2026 Zach Tellman, Rich Hickey and contributors</Copyright>
+        <PackageLicenseExpression>EPL-1.0</PackageLicenseExpression>
+        <RepositoryUrl>https://github.com/structmap/clr.data.int-map</RepositoryUrl>
+        <Company>ClojureCLR contributors</Company>
+        <PackageTags>Clojure;ClojureCLR</PackageTags>
+        <Version>1.3.1-alpha1</Version>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Clojure" Version="1.6.0"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <EmbeddedResource
+                LogicalName="clojure.data.int_map.cljr"
+                Include="src/main/clojure/clojure/data/int_map.cljr"
+                CopyToOutputDirectory="Never"
+        />
+    </ItemGroup>
+
+</Project>
