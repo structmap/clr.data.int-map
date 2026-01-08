@@ -115,7 +115,7 @@ public class IntSet : ISet
         return cnt;
     }
 
-    public BitSet toBitSet()
+    public BitArray toBitArray()
     {
         throw new InvalidOperationException();
     }
@@ -245,12 +245,12 @@ public class IntSet : ISet
         return (short)(val & (leafSize - 1));
     }
 
-    public class BitSetContainer : ISet
+    public class BitArrayContainer : ISet
     {
-        public BitSet bitSet;
+        public BitArray bitSet;
         public long epoch;
 
-        public BitSetContainer(long epoch, BitSet bitSet)
+        public BitArrayContainer(long epoch, BitArray bitSet)
         {
             this.epoch = epoch;
             this.bitSet = bitSet;
@@ -258,23 +258,23 @@ public class IntSet : ISet
 
         public ISet add(long epoch, long val) {
             if (epoch == this.epoch) {
-                bitSet.Set((short) val);
+                bitSet.SafeSet((int) val, true);
                 return this;
             } else {
-                BitSet bitSet = (BitSet) this.bitSet.Clone();
-                bitSet.Set((short) val);
-                return new BitSetContainer(epoch, bitSet);
+                BitArray bitSet = (BitArray) this.bitSet.Clone();
+                bitSet.SafeSet((int) val, true);
+                return new BitArrayContainer(epoch, bitSet);
             }
         }
 
         public ISet remove(long epoch, long val) {
             if (epoch == this.epoch) {
-                bitSet.Set((short) val, false);
+                bitSet.SafeSet((int) val, false);
                 return this;
             } else {
-                BitSet bitSet = (BitSet) this.bitSet.Clone();
-                bitSet.Set((short) val, false);
-                return new BitSetContainer(epoch, bitSet);
+                BitArray bitSet = (BitArray) this.bitSet.Clone();
+                bitSet.SafeSet((int) val, false);
+                return new BitArrayContainer(epoch, bitSet);
             }
         }
 
@@ -285,22 +285,34 @@ public class IntSet : ISet
 
         public ISet range(long epoch, long min, long max)
         {
-            var bitSet = (BitSet)this.bitSet.Clone();
+            var bitSet = (BitArray)this.bitSet.Clone();
 
-            var size = bitSet.Size;
-            bitSet.Set(0, (int)Math.Max(min, 0), false);
-            if (max < size) bitSet.Set(Math.Min((short)max + 1, size), size, false);
-            return new BitSetContainer(epoch, bitSet);
+            var size = bitSet.Count;
+            for (int i = 0; i < Math.Max(min, 0); i++)
+            {
+                bitSet.SafeSet(i, false);
+            }
+            if (max < size)
+            {
+                for (int i = Math.Min((short)max + 1, size); i < size; i++)
+                {
+                    bitSet.SafeSet(i, false);
+                }
+            }
+            return new BitArrayContainer(epoch, bitSet);
         }
 
         public IEnumerator elements(long offset, bool reverse)
         {
             ArrayList ns = new(bitSet.Cardinality());
             var idx = 0;
-            while (idx < bitSet.Length)
+            var it = bitSet.GetEnumerator();
+            while (it.MoveNext())
             {
-                idx = bitSet.NextSetBit(idx);
-                ns.Add(offset + idx);
+                if (it.Current is Boolean and true)
+                {
+                    ns.Add(offset + idx);
+                }
                 idx++;
             }
 
@@ -313,30 +325,30 @@ public class IntSet : ISet
             return bitSet.Cardinality();
         }
 
-        public BitSet toBitSet()
+        public BitArray toBitArray()
         {
             return bitSet;
         }
 
         public ISet intersection(long epoch, ISet val)
         {
-            var bitSet = (BitSet)this.bitSet.Clone();
-            bitSet.And(val.toBitSet());
-            return new BitSetContainer(epoch, bitSet);
+            var bitSet = (BitArray)this.bitSet.Clone();
+            bitSet.And(val.toBitArray());
+            return new BitArrayContainer(epoch, bitSet);
         }
 
         public ISet union(long epoch, ISet val)
         {
-            var bitSet = (BitSet)this.bitSet.Clone();
-            bitSet.Or(val.toBitSet());
-            return new BitSetContainer(epoch, bitSet);
+            var bitSet = (BitArray)this.bitSet.Clone();
+            bitSet.Or(val.toBitArray());
+            return new BitArrayContainer(epoch, bitSet);
         }
 
         public ISet difference(long epoch, ISet val)
         {
-            var bitSet = (BitSet)this.bitSet.Clone();
-            bitSet.AndNot(val.toBitSet());
-            return new BitSetContainer(epoch, bitSet);
+            var bitSet = (BitArray)this.bitSet.Clone();
+            bitSet.AndNot(val.toBitArray());
+            return new BitArrayContainer(epoch, bitSet);
         }
     }
 
@@ -353,10 +365,10 @@ public class IntSet : ISet
         {
             if (val == this.val) return this;
 
-            var bitSet = new BitSet(Math.Max((short)val, this.val));
-            bitSet.Set((short)val);
-            bitSet.Set(this.val);
-            return new BitSetContainer(epoch, bitSet);
+            var bitSet = new BitArray(Math.Max((short)val, this.val)+1);
+            bitSet.Set((int)val, true);
+            bitSet.Set(this.val, true);
+            return new BitArrayContainer(epoch, bitSet);
         }
 
         public ISet remove(long epoch, long val)
@@ -384,10 +396,10 @@ public class IntSet : ISet
             yield return val + offset;
         }
 
-        public BitSet toBitSet()
+        public BitArray toBitArray()
         {
-            var bitSet = new BitSet(val);
-            bitSet.Set(val);
+            var bitSet = new BitArray(val+1);
+            bitSet.Set(val, true);
             return bitSet;
         }
 

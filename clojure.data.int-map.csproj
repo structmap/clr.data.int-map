@@ -5,6 +5,10 @@
         <ImplicitUsings>enable</ImplicitUsings>
     </PropertyGroup>
 
+    <PropertyGroup Condition="'$(TargetFramework)' != 'net10.0'">
+        <DefineConstants>BEFOREDOTNET10</DefineConstants>
+    </PropertyGroup>
+
     <PropertyGroup>
         <PackageId>clojure.data.int-map</PackageId>
         <RootNamespace>clojure.data.int-map</RootNamespace>

@@ -19,7 +19,7 @@ public interface ISet {
   IEnumerator elements(long offset, bool reverse);
   long count();
 
-  BitSet toBitSet();
+  BitArray toBitArray();
 
   ISet intersection(long epoch, ISet sv);
   ISet union(long epoch, ISet sv);
