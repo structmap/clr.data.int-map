@@ -333,14 +333,26 @@ public class IntSet : ISet
         public ISet intersection(long epoch, ISet val)
         {
             var bitSet = (BitArray)this.bitSet.Clone();
-            bitSet.And(val.toBitArray());
+            var bitSet2 = val.toBitArray();
+            if (bitSet.Count != bitSet2.Count)
+            {
+                bitSet2 = bitSet2.Clone() as BitArray;
+                bitSet2.Length = bitSet.Count;
+            }
+            bitSet.And(bitSet2);
             return new BitArrayContainer(epoch, bitSet);
         }
 
         public ISet union(long epoch, ISet val)
         {
             var bitSet = (BitArray)this.bitSet.Clone();
-            bitSet.Or(val.toBitArray());
+            var bitSet2 = val.toBitArray();
+            if (bitSet.Count != bitSet2.Count)
+            {
+                bitSet2 = bitSet2.Clone() as BitArray;
+                bitSet2.Length = bitSet.Count;
+            }
+            bitSet.Or(bitSet2);
             return new BitArrayContainer(epoch, bitSet);
         }
 
