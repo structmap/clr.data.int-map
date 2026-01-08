@@ -1,0 +1,26 @@
+---
+name: nupkg
+on:
+  push:
+    tags:
+      - '*'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 10.0.x
+    - name: Restore, build and create NuGet package
+      run: dotnet pack
+    - name: Upload binaries to release
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: ./bin/Release/clojure.data.int-map.${{ github.ref }}.nupkg
+        asset_name: clojure.data.int-map.${{ github.ref }}.nupkg
+        tag: ${{ github.ref }}
+        overwrite: true
+        body: "release {{ github.ref }}"
