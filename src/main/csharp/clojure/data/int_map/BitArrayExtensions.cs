@@ -44,8 +44,10 @@ public static class BitArrayExtensions
 
     public static void SafeSet(this BitArray bitArray, int index, bool value)
     {
-        if (index >= bitArray.Length)
-            bitArray.Length = index + 1;
+        while (index >= bitArray.Length)
+        {
+            bitArray.Length *= 2; // bitArray.Length = index + 1;
+        }
         bitArray.Set(index, value);
     }
 
