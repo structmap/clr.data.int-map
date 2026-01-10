@@ -19,7 +19,7 @@
         <Description>A port of the data.int-map library to ClojureCLR</Description>
         <Copyright>Copyright © 2026 Zach Tellman, Rich Hickey and contributors</Copyright>
         <PackageLicenseExpression>EPL-1.0</PackageLicenseExpression>
-        <RepositoryUrl>https://github.com/structmap/clr.data.int-map</RepositoryUrl>
+        <RepositoryUrl>https://github.com/jamesdavidson/clr.data.int-map</RepositoryUrl>
         <Company>ClojureCLR contributors</Company>
         <PackageTags>Clojure;ClojureCLR</PackageTags>
         <Version>$(PublishVersion)</Version>
